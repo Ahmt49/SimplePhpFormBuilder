@@ -25,7 +25,10 @@ $_SESSION['token'] = md5(uniqid(rand(), true));
 
 
 // *** disabling magic quotes at runtime
-if(get_magic_quotes_gpc()){
+
+
+// Before php 7.4
+/*if(get_magic_quotes_gpc()){
     function stripslashes_gpc(&$value) {
 		$value = stripslashes($value);	
 	}
@@ -33,5 +36,15 @@ if(get_magic_quotes_gpc()){
     array_walk_recursive($_POST, 'stripslashes_gpc');
     array_walk_recursive($_COOKIE, 'stripslashes_gpc');
     if(is_array($_REQUEST)) array_walk_recursive($_REQUEST, 'stripslashes_gpc');
-}
+}*/
 
+// Requirement to use php 7.4 version
+if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()){
+    function stripslashes_gpc(&$value) {
+        $value = stripslashes($value);    
+    }
+    array_walk_recursive($_GET, 'stripslashes_gpc');
+    array_walk_recursive($_POST, 'stripslashes_gpc');
+    array_walk_recursive($_COOKIE, 'stripslashes_gpc');
+    if(is_array($_REQUEST)) array_walk_recursive($_REQUEST, 'stripslashes_gpc');
+}
